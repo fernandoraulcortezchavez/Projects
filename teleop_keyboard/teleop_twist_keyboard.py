@@ -6,6 +6,7 @@ import roslib; roslib.load_manifest('teleop_twist_keyboard')
 import rospy
 
 from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Empty
 
 import sys, select, termios, tty
 
@@ -68,6 +69,9 @@ if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
 
     pub = rospy.Publisher('bebop/cmd_vel', Twist, queue_size = 1)
+    takeoff = rospy.Publisher('bebop/takeoff', Empty, queue_size = 1)
+    land = rospy.Publisher('bebop/land', Empty, queue_size = 1)
+    reset = rospy.Publisher('bebop/reset', Empty, queue_size = 1)
     rospy.init_node('teleop_twist_keyboard')
 
     speed = rospy.get_param("~speed", 0.2)
@@ -97,6 +101,15 @@ if __name__=="__main__":
                 if (status == 14):
                     print(msg)
                 status = (status + 1) % 15
+            elif key == 'v':
+               empty = Empty()
+               takeoff.publish(empty)
+            elif key == 'b':
+               empty = Empty()
+               land.publish(empty)
+            elif key == 'n':
+               empty = Empty()
+               reset.publish(empty)
             else:
                 x = 0
                 y = 0
